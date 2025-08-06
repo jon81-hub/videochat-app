@@ -33,18 +33,27 @@ body {
 }
 
 .students-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-gap: 10px;
+    display: flex; /* Cambiado a flex */
+    flex-wrap: wrap; /* Permite que los elementos pasen a la siguiente línea */
+    justify-content: flex-start;
+    align-items: flex-start;
     height: 100%;
     overflow-y: auto;
+    gap: 10px; /* Separación entre los videos */
 }
 
-.students-grid video {
+.student-video-container {
+    width: 100%; /* Cada video ocupa el 100% del ancho del padre */
+    max-width: 250px; /* Un tamaño máximo para cada video */
+    box-sizing: border-box;
+}
+
+.student-video-container video {
     width: 100%;
     height: auto;
     background-color: #333;
 }
+
 
 .toolbar {
     position: fixed;
