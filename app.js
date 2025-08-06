@@ -112,6 +112,11 @@ window.onload = () => {
 
     if (userRole === 'profesor') {
         leaveBtn.textContent = 'Cerrar Clase';
+    } else if (userRole === 'student') {
+        // Ocultar el botón de grabación para los estudiantes
+        if (recordBtn) {
+            recordBtn.style.display = 'none';
+        }
     }
 
     // Deshabilitar botones por defecto hasta que se cargue la cámara
