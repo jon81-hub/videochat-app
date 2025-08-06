@@ -35,7 +35,7 @@ micBtn.addEventListener('click', () => {
     if (myStream) {
         micEnabled = !micEnabled;
         myStream.getAudioTracks()[0].enabled = micEnabled;
-        micBtn.textContent = micEnabled ? 'Silenciar'  : 'Micrófono';
+        micBtn.textContent = micEnabled ? 'Silenciar' : 'Micrófono';
     }
 });
 
@@ -43,7 +43,7 @@ camBtn.addEventListener('click', () => {
     if (myStream) {
         camEnabled = !camEnabled;
         myStream.getVideoTracks()[0].enabled = camEnabled;
-        camBtn.textContent = camEnabled ? 'Apagar' : 'Cámara' ;
+        camBtn.textContent = camEnabled ? 'Apagar' : 'Cámara';
     }
 });
 
