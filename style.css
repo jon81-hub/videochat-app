@@ -18,7 +18,7 @@ body {
     align-items: center;
 }
 
-.main-video-container video {
+.main-video-container canvas {
     max-width: 100%;
     max-height: 100%;
     background-color: #000;
@@ -33,22 +33,16 @@ body {
 }
 
 .students-grid {
-    display: flex; /* Cambiado a flex */
-    flex-wrap: wrap; /* Permite que los elementos pasen a la siguiente línea */
+    display: flex;
+    flex-wrap: wrap;
     justify-content: flex-start;
     align-items: flex-start;
     height: 100%;
     overflow-y: auto;
-    gap: 10px; /* Separación entre los videos */
+    gap: 10px;
 }
 
-.student-video-container {
-    width: 100%; /* Cada video ocupa el 100% del ancho del padre */
-    max-width: 250px; /* Un tamaño máximo para cada video */
-    box-sizing: border-box;
-}
-
-.student-video-container video {
+.students-grid video {
     width: 100%;
     height: auto;
     background-color: #333;

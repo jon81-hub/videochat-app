@@ -6,6 +6,7 @@ const camBtn = document.getElementById('camBtn');
 const leaveBtn = document.getElementById('leaveBtn');
 const shareScreenBtn = document.getElementById('shareScreenBtn');
 const recordBtn = document.getElementById('recordBtn');
+const virtualBgBtn = document.getElementById('virtualBgBtn');
 
 // Variables para la videollamada
 let myStream = null;
@@ -17,18 +18,35 @@ let mediaRecorder;
 const recordedChunks = [];
 let isRecording = false;
 
+// Variables para el fondo virtual
+let model;
+let isVirtualBgActive = false;
+let videoElement = document.createElement('video');
+let canvasContext = teacherVideo.getContext('2d');
+videoElement.autoplay = true;
+
 // 1. Conectarse a la cámara y el micrófono
 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
     .then(stream => {
         myStream = stream;
-        teacherVideo.srcObject = myStream;
-        teacherVideo.onloadedmetadata = () => teacherVideo.play();
+        videoElement.srcObject = myStream;
+
+        // Cargar el modelo de TensorFlow
+        bodyPix.load().then(loadedModel => {
+            model = loadedModel;
+            // Después de cargar el modelo, empezamos a procesar
+            videoElement.onloadedmetadata = () => {
+                videoElement.play();
+                segmentAndRender();
+            };
+        });
 
         // Inicializar botones de control
         micBtn.disabled = false;
         camBtn.disabled = false;
         recordBtn.disabled = false;
         shareScreenBtn.disabled = false;
+        virtualBgBtn.disabled = false;
     })
     .catch(error => {
         console.error('Error al acceder a la cámara y el micrófono:', error);
@@ -72,6 +90,11 @@ recordBtn.addEventListener('click', () => {
     isRecording = !isRecording;
 });
 
+virtualBgBtn.addEventListener('click', () => {
+    isVirtualBgActive = !isVirtualBgActive;
+    virtualBgBtn.textContent = isVirtualBgActive ? 'Fondo Original' : 'Fondo Virtual';
+});
+
 // Lógica para compartir pantalla
 let screenStream = null;
 let isSharingScreen = false;
@@ -88,11 +111,10 @@ function startScreenShare() {
     navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
         .then(stream => {
             screenStream = stream;
-            teacherVideo.srcObject = screenStream;
+            videoElement.srcObject = screenStream;
             isSharingScreen = true;
             shareScreenBtn.textContent = 'Dejar de Compartir';
 
-            // Volver a la cámara cuando se detiene la pantalla
             screenStream.getVideoTracks()[0].onended = () => {
                 stopScreenShare();
             };
@@ -110,9 +132,8 @@ function stopScreenShare() {
         isSharingScreen = false;
         shareScreenBtn.textContent = 'Compartir Pantalla';
     }
-    // Volver a la cámara local si está activa
     if (myStream) {
-        teacherVideo.srcObject = myStream;
+        videoElement.srcObject = myStream;
     }
 }
 
@@ -151,7 +172,51 @@ function stopRecording() {
     }
 }
 
-// 4. Lógica para manejar roles al cargar la página
+// 4. Lógica para el fondo virtual
+function segmentAndRender() {
+    requestAnimationFrame(segmentAndRender);
+
+    if (model && isVirtualBgActive) {
+        model.segmentPerson(videoElement, {
+            internalResolution: 'medium',
+            segmentationThreshold: 0.7,
+            flipHorizontal: false,
+        }).then(segmentation => {
+            const background = new Image();
+            background.src = 'llabackgd.png'; // Reemplaza con la ruta de tu imagen
+
+            const foregroundColor = {r: 255, g: 255, b: 255, a: 255};
+            const backgroundColor = {r: 0, g: 0, b: 0, a: 0};
+            const backgroundDarkening = 0.7;
+
+            const mask = toMask(segmentation);
+            drawWithMask(mask, videoElement, background, canvasContext, {
+                foregroundColor,
+                backgroundColor,
+                backgroundDarkening
+            });
+        });
+    } else {
+        // Si el fondo virtual está desactivado, simplemente dibuja el video
+        if (videoElement.readyState >= 2) {
+            canvasContext.drawImage(videoElement, 0, 0, teacherVideo.width, teacherVideo.height);
+        }
+    }
+}
+
+function toMask(segmentation) {
+    // Implementa la lógica de la máscara aquí
+    // Esto es un placeholder para simplificar el ejemplo
+    return segmentation;
+}
+
+function drawWithMask(mask, video, background, canvasContext, config) {
+    // Implementa la lógica de dibujo con la máscara aquí
+    // Esto es un placeholder para simplificar el ejemplo
+    canvasContext.drawImage(video, 0, 0, teacherVideo.width, teacherVideo.height);
+}
+
+// 5. Lógica para manejar roles al cargar la página
 window.onload = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const userRole = urlParams.get('role');
@@ -165,4 +230,5 @@ window.onload = () => {
     camBtn.disabled = true;
     recordBtn.disabled = true;
     shareScreenBtn.disabled = true;
+    virtualBgBtn.disabled = true;
 };
