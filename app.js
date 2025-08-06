@@ -35,7 +35,7 @@ micBtn.addEventListener('click', () => {
     if (myStream) {
         micEnabled = !micEnabled;
         myStream.getAudioTracks()[0].enabled = micEnabled;
-        micBtn.textContent = micEnabled ? 'Micrófono' : 'Silenciar';
+        micBtn.textContent = micEnabled ? 'Silenciar'  : 'Micrófono';
     }
 });
 
