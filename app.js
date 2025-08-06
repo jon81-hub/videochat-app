@@ -43,7 +43,7 @@ camBtn.addEventListener('click', () => {
     if (myStream) {
         camEnabled = !camEnabled;
         myStream.getVideoTracks()[0].enabled = camEnabled;
-        camBtn.textContent = camEnabled ? 'Cámara' : 'Apagar';
+        camBtn.textContent = camEnabled ? 'Apagar' : 'Cámara' ;
     }
 });
 
