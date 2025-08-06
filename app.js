@@ -37,6 +37,9 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             // Después de cargar el modelo, empezamos a procesar
             videoElement.onloadedmetadata = () => {
                 videoElement.play();
+                // Asegurar que el canvas tenga el tamaño correcto
+                teacherVideo.width = videoElement.videoWidth;
+                teacherVideo.height = videoElement.videoHeight;
                 segmentAndRender();
             };
         });
@@ -183,7 +186,7 @@ function segmentAndRender() {
             flipHorizontal: false,
         }).then(segmentation => {
             const background = new Image();
-            background.src = 'llabackgd.png'; // Reemplaza con la ruta de tu imagen
+            background.src = 'llabckgd.png';
 
             const foregroundColor = {r: 255, g: 255, b: 255, a: 255};
             const backgroundColor = {r: 0, g: 0, b: 0, a: 0};
