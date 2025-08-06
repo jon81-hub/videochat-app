@@ -28,6 +28,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         micBtn.disabled = false;
         camBtn.disabled = false;
         recordBtn.disabled = false;
+        shareScreenBtn.disabled = false;
     })
     .catch(error => {
         console.error('Error al acceder a la cámara y el micrófono:', error);
@@ -71,8 +72,47 @@ recordBtn.addEventListener('click', () => {
     isRecording = !isRecording;
 });
 
-// Deshabilitar el botón de compartir pantalla (no está implementado)
-shareScreenBtn.disabled = true;
+// Lógica para compartir pantalla
+let screenStream = null;
+let isSharingScreen = false;
+
+shareScreenBtn.addEventListener('click', () => {
+    if (!isSharingScreen) {
+        startScreenShare();
+    } else {
+        stopScreenShare();
+    }
+});
+
+function startScreenShare() {
+    navigator.mediaDevices.getDisplayMedia({ video: true, audio: true })
+        .then(stream => {
+            screenStream = stream;
+            teacherVideo.srcObject = screenStream;
+            isSharingScreen = true;
+            shareScreenBtn.textContent = 'Dejar de Compartir';
+
+            screenStream.getVideoTracks()[0].onended = () => {
+                stopScreenShare();
+            };
+        })
+        .catch(error => {
+            console.error('Error al compartir pantalla:', error);
+            alert('No se pudo iniciar la función de compartir pantalla.');
+        });
+}
+
+function stopScreenShare() {
+    if (screenStream) {
+        screenStream.getTracks().forEach(track => track.stop());
+        screenStream = null;
+        isSharingScreen = false;
+        shareScreenBtn.textContent = 'Compartir Pantalla';
+    }
+    if (myStream) {
+        teacherVideo.srcObject = myStream;
+    }
+}
 
 // 3. Funciones de grabación
 function startRecording() {
@@ -122,4 +162,5 @@ window.onload = () => {
     micBtn.disabled = true;
     camBtn.disabled = true;
     recordBtn.disabled = true;
+    shareScreenBtn.disabled = true;
 };
