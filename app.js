@@ -26,6 +26,21 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
             console.log('Nuevo usuario conectado:', userId);
             connectToNewUser(userId, stream);
         });
+
+        // Lógica de los botones
+        let micEnabled = true;
+        micBtn.addEventListener('click', () => {
+            myStream.getAudioTracks()[0].enabled = !myStream.getAudioTracks()[0].enabled;
+            micEnabled = !micEnabled;
+            micBtn.textContent = micEnabled ? 'Micrófono' : 'Silenciar';
+        });
+
+        let camEnabled = true;
+        camBtn.addEventListener('click', () => {
+            myStream.getVideoTracks()[0].enabled = !myStream.getVideoTracks()[0].enabled;
+            camEnabled = !camEnabled;
+            camBtn.textContent = camEnabled ? 'Cámara' : 'Apagar';
+        });
     })
     .catch(error => {
         console.error('Error al acceder a la cámara y el micrófono:', error);
@@ -62,20 +77,6 @@ function addVideoStream(video, stream, role) {
 }
 
 // 4. Lógica de los botones
-let micEnabled = true;
-micBtn.addEventListener('click', () => {
-    myStream.getAudioTracks()[0].enabled = !myStream.getAudioTracks()[0].enabled;
-    micEnabled = !micEnabled;
-    micBtn.textContent = micEnabled ? 'Micrófono' : 'Silenciar';
-});
-
-let camEnabled = true;
-camBtn.addEventListener('click', () => {
-    myStream.getVideoTracks()[0].enabled = !myStream.getVideoTracks()[0].enabled;
-    camEnabled = !camEnabled;
-    camBtn.textContent = camEnabled ? 'Cámara' : 'Apagar';
-});
-
 leaveBtn.addEventListener('click', () => {
     // Lógica para salir de la clase y redirigir al portal
     alert('Has salido de la clase.');
