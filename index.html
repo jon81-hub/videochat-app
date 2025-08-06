@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <title>Clase en vivo</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.13.0/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-pix@2.0/dist/body-pix.min.js"></script>
 </head>
 <body>
 
     <div class="main-container">
         <div class="main-video-container">
-            <canvas id="teacherVideo"></canvas>
+            <video id="teacherVideo" autoplay muted></video>
         </div>
 
         <div class="students-panel">
@@ -21,7 +19,6 @@
     </div>
 
     <div class="toolbar">
-        <button id="virtualBgBtn">Fondo Virtual</button>
         <button id="recordBtn">Grabar Clase</button>
         <button id="micBtn">Silenciar</button>
         <button id="camBtn">Apagar</button>
