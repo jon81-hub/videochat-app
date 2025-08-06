@@ -28,7 +28,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         micBtn.disabled = false;
         camBtn.disabled = false;
         recordBtn.disabled = false;
-        shareScreenBtn.disabled = false;
+        shareScreenBtn.disabled = false; // Habilitamos el botón de compartir pantalla
     })
     .catch(error => {
         console.error('Error al acceder a la cámara y el micrófono:', error);
@@ -92,6 +92,7 @@ function startScreenShare() {
             isSharingScreen = true;
             shareScreenBtn.textContent = 'Dejar de Compartir';
 
+            // Volver a la cámara cuando se detiene la pantalla
             screenStream.getVideoTracks()[0].onended = () => {
                 stopScreenShare();
             };
@@ -109,6 +110,7 @@ function stopScreenShare() {
         isSharingScreen = false;
         shareScreenBtn.textContent = 'Compartir Pantalla';
     }
+    // Volver a la cámara local si está activa
     if (myStream) {
         teacherVideo.srcObject = myStream;
     }
