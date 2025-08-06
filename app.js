@@ -11,28 +11,25 @@ const recordBtn = document.getElementById('recordBtn');
 const socket = io();
 
 // Variables para la videollamada
-let myStream;
+let myStream = null;
 let micEnabled = true;
 let camEnabled = true;
-let myPeerId;
-const peers = {};
 
 // 1. Conectarse a la cámara y el micrófono
 function initializeMedia() {
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then(stream => {
             myStream = stream;
-            addVideoStream(teacherVideo, stream, 'profesor');
+            teacherVideo.srcObject = myStream;
+            teacherVideo.onloadedmetadata = () => teacherVideo.play();
 
-            // Escuchar cuando otros usuarios se conectan (lógica futura)
-            socket.on('user-connected', userId => {
-                console.log('Nuevo usuario conectado:', userId);
-                connectToNewUser(userId, stream);
-            });
+            // Deshabilitar los botones hasta que la cámara esté lista
+            micBtn.disabled = false;
+            camBtn.disabled = false;
         })
         .catch(error => {
             console.error('Error al acceder a la cámara y el micrófono:', error);
-            alert('Por favor, concede los permisos de cámara y micrófono para iniciar la videollamada.');
+            alert('Por favor, concede los permisos de cámara y micrófono.');
         });
 }
 
