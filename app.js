@@ -28,7 +28,7 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         micBtn.disabled = false;
         camBtn.disabled = false;
         recordBtn.disabled = false;
-        shareScreenBtn.disabled = false; // Habilitamos el botón de compartir pantalla
+        shareScreenBtn.disabled = false;
     })
     .catch(error => {
         console.error('Error al acceder a la cámara y el micrófono:', error);
