@@ -1,15 +1,17 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-
-// Importamos el módulo 'path' para trabajar con rutas de archivos
-const path = require('path'); 
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+    cors: {
+        origin: '*',
+    }
+});
 
-// Hacemos que la aplicación sirva los archivos estáticos (HTML, CSS, JS) desde la carpeta 'public'
+// Usamos una ruta absoluta para asegurar que Vercel encuentre la carpeta 'public'
 app.use(express.static(path.join(__dirname, 'public')));
 
 io.on('connection', socket => {
