@@ -26,6 +26,10 @@
     {
       "src": "/(.*)",
       "dest": "index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "style.css"
     }
   ]
 }
