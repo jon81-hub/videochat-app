@@ -7,59 +7,34 @@ const leaveBtn = document.getElementById('leaveBtn');
 const shareScreenBtn = document.getElementById('shareScreenBtn');
 const recordBtn = document.getElementById('recordBtn');
 
-// Conectar con el servidor de Socket.IO
-const socket = io();
-
 // Variables para la videollamada
 let myStream = null;
 let micEnabled = true;
 let camEnabled = true;
 
+// Variables para la grabación
+let mediaRecorder;
+const recordedChunks = [];
+let isRecording = false;
+
 // 1. Conectarse a la cámara y el micrófono
-function initializeMedia() {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then(stream => {
-            myStream = stream;
-            teacherVideo.srcObject = myStream;
-            teacherVideo.onloadedmetadata = () => teacherVideo.play();
+navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    .then(stream => {
+        myStream = stream;
+        teacherVideo.srcObject = myStream;
+        teacherVideo.onloadedmetadata = () => teacherVideo.play();
 
-            // Deshabilitar los botones hasta que la cámara esté lista
-            micBtn.disabled = false;
-            camBtn.disabled = false;
-        })
-        .catch(error => {
-            console.error('Error al acceder a la cámara y el micrófono:', error);
-            alert('Por favor, concede los permisos de cámara y micrófono.');
-        });
-}
-
-// 2. Lógica para manejar nuevos usuarios
-function connectToNewUser(userId, stream) {
-    // Aquí se crearía una nueva conexión de WebRTC
-    // En este ejemplo, solo añadiremos un video de un "usuario simulado"
-    const studentVideo = document.createElement('video');
-    studentVideo.muted = true;
-    addVideoStream(studentVideo, stream, 'estudiante');
-}
-
-// 3. Añadir el stream de video a la interfaz
-function addVideoStream(video, stream, role) {
-    video.srcObject = stream;
-    video.addEventListener('loadedmetadata', () => {
-        video.play();
+        // Inicializar botones de control
+        micBtn.disabled = false;
+        camBtn.disabled = false;
+        recordBtn.disabled = false;
+    })
+    .catch(error => {
+        console.error('Error al acceder a la cámara y el micrófono:', error);
+        alert('Por favor, concede los permisos de cámara y micrófono.');
     });
 
-    if (role === 'profesor') {
-        teacherVideo.srcObject = stream;
-    } else {
-        const videoContainer = document.createElement('div');
-        videoContainer.classList.add('student-video-container');
-        videoContainer.append(video);
-        studentsGrid.append(videoContainer);
-    }
-}
-
-// 4. Lógica de los botones
+// 2. Lógica de los botones
 micBtn.addEventListener('click', () => {
     if (myStream) {
         micEnabled = !micEnabled;
@@ -83,17 +58,68 @@ leaveBtn.addEventListener('click', () => {
     window.location.href = 'https://tu-portal-de-academia.com';
 });
 
-// Desactivar temporalmente los botones no implementados
-shareScreenBtn.disabled = true;
-recordBtn.disabled = true;
+recordBtn.addEventListener('click', () => {
+    if (!isRecording) {
+        startRecording();
+        recordBtn.textContent = 'Detener Grabación';
+        recordBtn.classList.add('recording');
+    } else {
+        stopRecording();
+        recordBtn.textContent = 'Grabar Clase';
+        recordBtn.classList.remove('recording');
+    }
+    isRecording = !isRecording;
+});
 
-// 5. Lógica de los roles
+// Deshabilitar el botón de compartir pantalla (no está implementado)
+shareScreenBtn.disabled = true;
+
+// 3. Funciones de grabación
+function startRecording() {
+    if (myStream) {
+        mediaRecorder = new MediaRecorder(myStream);
+        mediaRecorder.ondataavailable = event => {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'clase-grabada.webm';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            recordedChunks.length = 0;
+        };
+        mediaRecorder.start();
+        console.log('Grabación iniciada.');
+    } else {
+        alert('No se puede iniciar la grabación. La cámara no está activa.');
+    }
+}
+
+function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        console.log('Grabación detenida. Descargando archivo...');
+    }
+}
+
+// 4. Lógica para manejar roles al cargar la página
 window.onload = () => {
-    initializeMedia();
     const urlParams = new URLSearchParams(window.location.search);
     const userRole = urlParams.get('role');
 
     if (userRole === 'profesor') {
         leaveBtn.textContent = 'Cerrar Clase';
     }
+
+    // Deshabilitar botones por defecto hasta que se cargue la cámara
+    micBtn.disabled = true;
+    camBtn.disabled = true;
+    recordBtn.disabled = true;
 };
