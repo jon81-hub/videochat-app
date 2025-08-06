@@ -24,6 +24,8 @@ let isVirtualBgActive = false;
 let videoElement = document.createElement('video');
 let canvasContext = teacherVideo.getContext('2d');
 videoElement.autoplay = true;
+videoElement.muted = true; // Importante para evitar eco
+videoElement.playsInline = true;
 
 // 1. Conectarse a la cámara y el micrófono
 navigator.mediaDevices.getUserMedia({ video: true, audio: true })
@@ -34,13 +36,12 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         // Cargar el modelo de TensorFlow
         bodyPix.load().then(loadedModel => {
             model = loadedModel;
-            // Después de cargar el modelo, empezamos a procesar
+            // Esperamos a que el video se cargue y tenga sus dimensiones
             videoElement.onloadedmetadata = () => {
                 videoElement.play();
-                // Asegurar que el canvas tenga el tamaño correcto
                 teacherVideo.width = videoElement.videoWidth;
                 teacherVideo.height = videoElement.videoHeight;
-                segmentAndRender();
+                segmentAndRender(); // Inicia el ciclo de renderizado
             };
         });
 
@@ -179,44 +180,29 @@ function stopRecording() {
 function segmentAndRender() {
     requestAnimationFrame(segmentAndRender);
 
-    if (model && isVirtualBgActive) {
-        model.segmentPerson(videoElement, {
-            internalResolution: 'medium',
-            segmentationThreshold: 0.7,
-            flipHorizontal: false,
-        }).then(segmentation => {
-            const background = new Image();
-            background.src = 'llabckgd.png';
+    if (model && videoElement.readyState >= 2) {
+        if (isVirtualBgActive) {
+            model.segmentPerson(videoElement, {
+                internalResolution: 'medium',
+                segmentationThreshold: 0.7,
+                flipHorizontal: false,
+            }).then(segmentation => {
+                const background = new Image();
+                background.src = 'llabckgd.png';
 
-            const foregroundColor = {r: 255, g: 255, b: 255, a: 255};
-            const backgroundColor = {r: 0, g: 0, b: 0, a: 0};
-            const backgroundDarkening = 0.7;
+                const foregroundColor = {r: 255, g: 255, b: 255, a: 255};
+                const backgroundColor = {r: 0, g: 0, b: 0, a: 0};
+                const backgroundDarkening = 0.7;
 
-            const mask = toMask(segmentation);
-            drawWithMask(mask, videoElement, background, canvasContext, {
-                foregroundColor,
-                backgroundColor,
-                backgroundDarkening
+                bodyPix.drawMask(
+                    teacherVideo, videoElement, segmentation, 
+                    0.7, 0, false);
             });
-        });
-    } else {
-        // Si el fondo virtual está desactivado, simplemente dibuja el video
-        if (videoElement.readyState >= 2) {
+        } else {
+            // Si el fondo virtual está desactivado, simplemente dibuja el video
             canvasContext.drawImage(videoElement, 0, 0, teacherVideo.width, teacherVideo.height);
         }
     }
-}
-
-function toMask(segmentation) {
-    // Implementa la lógica de la máscara aquí
-    // Esto es un placeholder para simplificar el ejemplo
-    return segmentation;
-}
-
-function drawWithMask(mask, video, background, canvasContext, config) {
-    // Implementa la lógica de dibujo con la máscara aquí
-    // Esto es un placeholder para simplificar el ejemplo
-    canvasContext.drawImage(video, 0, 0, teacherVideo.width, teacherVideo.height);
 }
 
 // 5. Lógica para manejar roles al cargar la página
