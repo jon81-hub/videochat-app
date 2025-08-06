@@ -11,8 +11,13 @@ const io = socketIo(server, {
     }
 });
 
-// Usamos una ruta absoluta para asegurar que Vercel encuentre la carpeta 'public'
+// Sirve los archivos estáticos desde la carpeta 'public'
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Ruta explícita para la página principal
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 io.on('connection', socket => {
     console.log(`Nuevo usuario conectado: ${socket.id}`);
