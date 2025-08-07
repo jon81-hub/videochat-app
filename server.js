@@ -1,5 +1,5 @@
 const express = require('express');
-const http = require('http');
+const http = require('https');
 const socketIo = require('socket.io');
 const path = require('path');
 
@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', socket => {
-    console.log(`Nuevo usuario conectado: ${socket.id}`);
+    console.log(`New user connected: ${socket.id}`);
 
     socket.on('join-class', role => {
         console.log(`Usuario ${socket.id} se unió como ${role}`);
