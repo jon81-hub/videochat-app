@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Clase en vivo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="main-video-container">
+            <video id="teacherVideo" autoplay muted></video>
+        </div>
+
+        <div class="students-panel">
+            <div class="students-grid" id="studentsGrid">
+                </div>
+        </div>
+    </div>
+
+    <div class="toolbar">
+        <button id="recordBtn">Grabar Clase</button>
+        <button id="micBtn">Silenciar</button>
+        <button id="camBtn">Apagar</button>
+        <button id="leaveBtn" class="leave-btn">Salir de la Clase</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
