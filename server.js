@@ -6,33 +6,41 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
-    cors: {
-        origin: '*',
-    }
+  cors: {
+    origin: '*',
+  }
 });
 
+// Servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Eventos de WebSocket
 io.on('connection', socket => {
-    socket.on('join-class', role => {
-        socket.broadcast.emit('user-connected', socket.id);
-    });
+  console.log(`Usuario conectado: ${socket.id}`);
 
-    socket.on('disconnect', () => {
-        socket.broadcast.emit('user-disconnected', socket.id);
-    });
+  socket.on('join-class', role => {
+    socket.broadcast.emit('user-connected', socket.id);
+  });
 
-    socket.on('offer', (targetId, sdp) => {
-        socket.to(targetId).emit('offer', socket.id, sdp);
-    });
+  socket.on('disconnect', () => {
+    socket.broadcast.emit('user-disconnected', socket.id);
+  });
 
-    socket.on('answer', (targetId, sdp) => {
-        socket.to(targetId).emit('answer', socket.id, sdp);
-    });
+  socket.on('offer', (targetId, sdp) => {
+    socket.to(targetId).emit('offer', socket.id, sdp);
+  });
 
-    socket.on('ice-candidate', (targetId, candidate) => {
-        socket.to(targetId).emit('ice-candidate', socket.id, candidate);
-    });
+  socket.on('answer', (targetId, sdp) => {
+    socket.to(targetId).emit('answer', socket.id, sdp);
+  });
+
+  socket.on('ice-candidate', (targetId, candidate) => {
+    socket.to(targetId).emit('ice-candidate', socket.id, candidate);
+  });
 });
 
-module.exports = app;
+// 🔥 Aquí levantamos el servidor (esto es lo que Render necesita)
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
+});
