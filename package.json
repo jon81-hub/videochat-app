@@ -1,5 +1,5 @@
 {
-  "name": "webcamapp",
+  "name": "appwebcam",
   "version": "1.0.0",
   "description": "Aplicación de videollamada",
   "main": "server.js",
