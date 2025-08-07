@@ -39,8 +39,12 @@ io.on('connection', socket => {
   });
 });
 
-// 🔥 Aquí levantamos el servidor (esto es lo que Render necesita)
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/index.html'));
+});
+
