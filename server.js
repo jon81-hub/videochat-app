@@ -1,5 +1,5 @@
 const express = require('express');
-const http = require('https');
+const http = require('http');
 const socketIo = require('socket.io');
 const path = require('path');
 
@@ -11,24 +11,14 @@ const io = socketIo(server, {
     }
 });
 
-// Sirve los archivos estáticos desde la carpeta 'public'
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Ruta explícita para la página principal
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
 io.on('connection', socket => {
-    console.log(`New user connected: ${socket.id}`);
-
     socket.on('join-class', role => {
-        console.log(`Usuario ${socket.id} se unió como ${role}`);
         socket.broadcast.emit('user-connected', socket.id);
     });
 
     socket.on('disconnect', () => {
-        console.log(`Usuario desconectado: ${socket.id}`);
         socket.broadcast.emit('user-disconnected', socket.id);
     });
 
