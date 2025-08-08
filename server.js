@@ -1,5 +1,5 @@
 const express = require('express');
-const http = require('http');
+const http = require('https');
 const socketIo = require('socket.io');
 const path = require('path');
 const app = express();
@@ -47,6 +47,6 @@ server.listen(PORT, () => {
 });
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/index.html'));
+  res.sendFile(path.join(__dirname, 'public/root.html'));
 });
 
