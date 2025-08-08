@@ -54,7 +54,7 @@ leaveBtn.addEventListener('click', () => {
     if (myStream) {
         myStream.getTracks().forEach(track => track.stop());
     }
-    window.location.href = 'https://tu-portal-de-academia.com';
+    window.location.href = 'https://tu-portal-de-aprendizaje.com';
 });
 
 recordBtn.addEventListener('click', () => {
