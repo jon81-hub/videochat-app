@@ -1,7 +1,7 @@
 const CACHE_NAME = "videoclase-cache-v1";
 const urlsToCache = [
   "/",
-  "/index.html",
+  "/room.html",
   "/style.css",
   "/app.js",
   "/icon-192.png",
