@@ -54,7 +54,20 @@ leaveBtn.addEventListener('click', () => {
     if (myStream) {
         myStream.getTracks().forEach(track => track.stop());
     }
-    window.location.href = 'https://tu-portal-de-aprendizaje.com';
+
+    // Aquí verificas el rol del usuario
+    const userRole = 'profesor'; // Reemplaza esto con la forma en que obtengas el rol real del usuario
+
+
+
+    if (userRole === 'profesor') {
+        window.location.href = 'https://tu-portal-de-aprendizaje.com';
+    } else if (userRole === 'alumno') {
+        window.location.href = 'https://el-campus-del-alumno.com';
+    } else {
+        // Opción de reserva, por si el rol no coincide
+        window.location.href = 'https://pagina-por-defecto.com';
+    }
 });
 
 recordBtn.addEventListener('click', () => {
