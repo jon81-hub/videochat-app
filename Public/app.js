@@ -10,7 +10,7 @@ const recordBtn = document.getElementById('recordBtn');
 let myStream;
 let myPeerConnection;
 const peerConnections = {};
-const socket = io('https://tu-dominio-de-digitalocean.com'); // IMPORTANTE: Cambia esto por tu dominio real
+const socket = io('https://myroomvirtual.com'); 
 const urlParams = new URLSearchParams(window.location.search);
 const userRole = urlParams.get('role');
 
